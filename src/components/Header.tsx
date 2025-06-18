@@ -24,7 +24,7 @@ const Header = () => {
           <Button
             variant="outline"
             size="sm"
-            className="btn-glow border-dark-border bg-transparent text-white hover:bg-dark-card hover:border-dark-accent"
+            className="btn-glow border-dark-border bg-transparent text-white hover:bg-dark-card hover:border-dark-accent hover:text-dark-accent neon-glow transition-all duration-200"
             onClick={() => window.open('https://github.com', '_blank')}
           >
             <Github className="w-4 h-4 mr-2" />
@@ -33,7 +33,7 @@ const Header = () => {
           <Button
             variant="outline"
             size="sm"
-            className="btn-glow border-dark-border bg-transparent text-white hover:bg-dark-card hover:border-dark-accent"
+            className="btn-glow border-dark-border bg-transparent text-white hover:bg-dark-card hover:border-dark-accent hover:text-dark-accent"
             onClick={() => window.open('https://vercel.com', '_blank')}
           >
             <ExternalLink className="w-4 h-4 mr-2" />
