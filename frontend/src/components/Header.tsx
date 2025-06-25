@@ -1,11 +1,10 @@
-
 import { Github, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Header = () => {
   const scrollToGenerator = () => {
-    const element = document.getElementById('generator');
-    element?.scrollIntoView({ behavior: 'smooth' });
+    const element = document.getElementById("generator");
+    element?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -25,19 +24,10 @@ const Header = () => {
             variant="outline"
             size="sm"
             className="btn-glow border-dark-border bg-transparent text-white hover:bg-dark-card hover:border-dark-accent hover:text-dark-accent neon-glow transition-all duration-200"
-            onClick={() => window.open('https://github.com', '_blank')}
+            onClick={() => window.open("https://github.com", "_blank")}
           >
             <Github className="w-4 h-4 mr-2" />
             GitHub ⭐
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="btn-glow border-dark-border bg-transparent text-white hover:bg-dark-card hover:border-dark-accent hover:text-dark-accent"
-            onClick={() => window.open('https://vercel.com', '_blank')}
-          >
-            <ExternalLink className="w-4 h-4 mr-2" />
-            Launch on Vercel
           </Button>
         </div>
 

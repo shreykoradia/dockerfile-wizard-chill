@@ -1,0 +1,12 @@
+{
+  "nodeModulesDir": "auto",
+  "importMapPath": "import_map.json",
+  "compilerOptions": { "lib": ["deno.ns", "dom"] },
+  "tasks": {
+    "dev": "deno run --allow-net --allow-env main.ts"
+  },
+  "imports": {
+    "@google/genai": "npm:@google/genai@1.6.0",
+    "zod": "npm:zod@^3.25.67"
+  }
+}
