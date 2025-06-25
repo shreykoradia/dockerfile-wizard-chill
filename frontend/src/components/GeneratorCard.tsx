@@ -1,32 +1,44 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { FileText, Zap } from "lucide-react";
 
 interface GeneratorCardProps {
-  onGenerate: (config: any) => void;
+  onGenerate: (config: ConfigProps) => void;
   isLoading: boolean;
 }
 
+export interface ConfigProps {
+  configText: string;
+  stack: string;
+  needsRedis: boolean;
+  needsPostgres: boolean;
+}
+
 const GeneratorCard = ({ onGenerate, isLoading }: GeneratorCardProps) => {
-  const [stack, setStack] = useState("");
-  const [configText, setConfigText] = useState("");
-  const [needsRedis, setNeedsRedis] = useState(false);
-  const [needsPostgres, setNeedsPostgres] = useState(false);
+  const [stack, setStack] = useState<string>("");
+  const [configText, setConfigText] = useState<string>("");
+  const [needsRedis, setNeedsRedis] = useState<boolean>(false);
+  const [needsPostgres, setNeedsPostgres] = useState<boolean>(false);
 
   const handleGenerate = () => {
     if (!stack || !configText.trim()) return;
-    
+
     onGenerate({
       stack,
       configText,
       needsRedis,
-      needsPostgres
+      needsPostgres,
     });
   };
 
@@ -79,7 +91,7 @@ python-multipart==0.0.6`);
               Select your stack, paste your config, get magic ✨
             </p>
           </CardHeader>
-          
+
           <CardContent className="space-y-6">
             {/* Stack Selection */}
             <div className="space-y-2">
@@ -89,13 +101,22 @@ python-multipart==0.0.6`);
                   <SelectValue placeholder="Choose your poison..." />
                 </SelectTrigger>
                 <SelectContent className="bg-dark-card border-dark-border">
-                  <SelectItem value="nodejs" className="text-white hover:bg-dark-bg">
-                    🟢 Node.js
+                  <SelectItem
+                    value="nodejs"
+                    className="text-white hover:bg-dark-bg"
+                  >
+                    ⚪ Node.js
                   </SelectItem>
-                  <SelectItem value="nextjs" className="text-white hover:bg-dark-bg">
+                  <SelectItem
+                    value="nextjs"
+                    className="text-white hover:bg-dark-bg"
+                  >
                     ⚡ Next.js
                   </SelectItem>
-                  <SelectItem value="fastapi" className="text-white hover:bg-dark-bg">
+                  <SelectItem
+                    value="fastapi"
+                    className="text-white hover:bg-dark-bg"
+                  >
                     🚀 FastAPI
                   </SelectItem>
                 </SelectContent>
@@ -122,9 +143,10 @@ python-multipart==0.0.6`);
               <Textarea
                 value={configText}
                 onChange={(e) => setConfigText(e.target.value)}
-                placeholder={stack === "fastapi" 
-                  ? "Paste your requirements.txt content here..." 
-                  : "Paste your package.json content here..."
+                placeholder={
+                  stack === "fastapi"
+                    ? "Paste your requirements.txt content here..."
+                    : "Paste your package.json content here..."
                 }
                 className="bg-dark-bg border-dark-border text-white font-mono text-sm min-h-[200px] resize-none"
               />
@@ -142,7 +164,7 @@ python-multipart==0.0.6`);
                   Needs Redis? 🔴
                 </Label>
               </div>
-              
+
               <div className="flex items-center space-x-3 p-3 rounded-lg bg-dark-bg/50">
                 <Switch
                   checked={needsPostgres}
@@ -160,11 +182,17 @@ python-multipart==0.0.6`);
               onClick={handleGenerate}
               disabled={!stack || !configText.trim() || isLoading}
               className={`w-full btn-glow bg-dark-accent text-black font-semibold py-3 text-lg hover:bg-dark-accent/90 ${
-                isLoading ? 'animate-pulse' : ''
-              } ${!stack || !configText.trim() ? 'opacity-50 cursor-not-allowed' : 'neon-glow'}`}
+                isLoading ? "animate-pulse" : ""
+              } ${
+                !stack || !configText.trim()
+                  ? "opacity-50 cursor-not-allowed"
+                  : "neon-glow"
+              }`}
             >
               <Zap className="w-5 h-5 mr-2" />
-              {isLoading ? "Generating magic..." : "Generate That Dockerfile 🪄"}
+              {isLoading
+                ? "Generating magic..."
+                : "Generate That Dockerfile 🪄"}
             </Button>
           </CardContent>
         </Card>
