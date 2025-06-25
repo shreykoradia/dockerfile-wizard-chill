@@ -3,6 +3,7 @@ import { DockerfileResponseSchema } from "./schema.ts";
 import { InputSchema } from "./schema.ts";
 import { GoogleGenAI } from "@google/genai";
 import { SYSTEM_PROMPT } from "./prompt.ts";
+import "https://deno.land/std@0.224.0/dotenv/load.ts";
 
 // Gemini client
 const genAI = new GoogleGenAI({
@@ -10,9 +11,18 @@ const genAI = new GoogleGenAI({
   apiKey: Deno.env.get("LLM_MODEL_KEY")!,
 });
 
+const SALT = Deno.env.get("API_SALT_KEY")!;
+
 // HTTP handler
 async function handler(req: Request): Promise<Response> {
-  if (req.method !== "POST") {
+  const clientSalt = req.headers.get("x-salt-key");
+
+  if (clientSalt !== SALT) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const { pathname } = new URL(req.url);
+  if (req.method !== "POST" && pathname === "/docker-generate") {
     return new Response("Only POST allowed", { status: 405 });
   }
 
@@ -20,7 +30,7 @@ async function handler(req: Request): Promise<Response> {
   try {
     userInput = await req.json();
   } catch {
-    return new Response("Invalid JSON", { status: 400 });
+    return new Response("Invalid Payload", { status: 400 });
   }
 
   const parsed = InputSchema.safeParse(userInput);
@@ -32,9 +42,13 @@ async function handler(req: Request): Promise<Response> {
   }
 
   // Compose chat messages
+  const promptPayload = JSON.stringify(parsed.data, null, 2);
+
   const messages = [
-    { role: "system", content: SYSTEM_PROMPT },
-    { role: "user", content: JSON.stringify(parsed.data, null, 2) },
+    {
+      role: "user",
+      parts: [{ text: SYSTEM_PROMPT }, { text: promptPayload }],
+    },
   ];
 
   // Call Gemini
@@ -42,9 +56,19 @@ async function handler(req: Request): Promise<Response> {
     model: Deno.env.get("LLM_MODEL_NAME")!,
     contents: messages,
   });
-  const text = response.text ?? "No results found";
 
-  const outputResponse = DockerfileResponseSchema.safeParse(text);
+  const candidate = response?.candidates?.[0];
+  const part = candidate?.content?.parts?.[0];
+  const text = part?.text ?? "No results found";
+
+  const cleanText = text
+    .trim()
+    .replace(/^```json\n/, "")
+    .replace(/```$/, "");
+
+  const outputResponse = DockerfileResponseSchema.safeParse(
+    JSON.parse(cleanText)
+  );
 
   if (!outputResponse.success) {
     return new Response(
@@ -56,7 +80,7 @@ async function handler(req: Request): Promise<Response> {
     );
   }
 
-  return new Response(JSON.stringify({ output: outputResponse.data }), {
+  return new Response(JSON.stringify({ result: outputResponse.data }), {
     headers: { "Content-Type": "application/json" },
   });
 }

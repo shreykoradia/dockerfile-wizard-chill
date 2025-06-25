@@ -133,7 +133,7 @@ python-multipart==0.0.6`);
                   variant="ghost"
                   size="sm"
                   onClick={showExample}
-                  className="text-dark-accent hover:text-dark-accent/80 text-xs"
+                  className="text-xs"
                   disabled={!stack}
                 >
                   <FileText className="w-3 h-3 mr-1" />

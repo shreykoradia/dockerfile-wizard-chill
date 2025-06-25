@@ -3,7 +3,7 @@
   "importMapPath": "import_map.json",
   "compilerOptions": { "lib": ["deno.ns", "dom"] },
   "tasks": {
-    "dev": "deno run --allow-env --allow-net --allow-env main.ts"
+    "dev": "deno run --quiet --allow-net --allow-env --allow-read main.ts"
   },
   "imports": {
     "@google/genai": "npm:@google/genai@1.6.0",

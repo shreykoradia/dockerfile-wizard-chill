@@ -37,7 +37,6 @@ const ResultSection = ({ results, onDownload }: ResultSectionProps) => {
           variant="ghost"
           size="sm"
           onClick={() => copyToClipboard(content, filename)}
-          className="text-dark-accent hover:text-dark-accent/80"
         >
           <Copy className="w-4 h-4" />
         </Button>
