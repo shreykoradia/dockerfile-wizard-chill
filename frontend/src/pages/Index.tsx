@@ -8,7 +8,7 @@ import { useKonamiCode } from "@/hooks/useKonamiCode";
 import { generateDockerFiles, downloadAsZip } from "@/utils/dockerGenerator";
 import { useToast } from "@/hooks/use-toast";
 
-interface ResponseProps {
+export interface ResponseProps {
   dockerfile: string;
   dockerCompose: string;
   dockerignore: string;

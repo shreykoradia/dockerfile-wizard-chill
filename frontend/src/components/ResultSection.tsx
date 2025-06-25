@@ -1,13 +1,13 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Copy, Download, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ResponseProps } from "@/pages/Index";
 
 interface ResultSectionProps {
-  results: any;
+  results: ResponseProps;
   onDownload: () => void;
 }
 
@@ -23,7 +23,13 @@ const ResultSection = ({ results, onDownload }: ResultSectionProps) => {
     });
   };
 
-  const CodeBlock = ({ content, filename }: { content: string; filename: string }) => (
+  const CodeBlock = ({
+    content,
+    filename,
+  }: {
+    content: string;
+    filename: string;
+  }) => (
     <div className="relative">
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm text-dark-muted font-mono">{filename}</span>
@@ -54,30 +60,34 @@ const ResultSection = ({ results, onDownload }: ResultSectionProps) => {
               Fresh Docker configs, hot off the press
             </p>
           </CardHeader>
-          
+
           <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
               <TabsList className="grid w-full grid-cols-4 bg-dark-bg border border-dark-border">
-                <TabsTrigger 
-                  value="dockerfile" 
+                <TabsTrigger
+                  value="dockerfile"
                   className="data-[state=active]:bg-dark-accent data-[state=active]:text-black"
                 >
                   Dockerfile
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="compose" 
+                <TabsTrigger
+                  value="compose"
                   className="data-[state=active]:bg-dark-accent data-[state=active]:text-black"
                 >
                   docker-compose.yml
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="dockerignore" 
+                <TabsTrigger
+                  value="dockerignore"
                   className="data-[state=active]:bg-dark-accent data-[state=active]:text-black"
                 >
                   .dockerignore
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="explain" 
+                <TabsTrigger
+                  value="explain"
                   className="data-[state=active]:bg-dark-accent data-[state=active]:text-black"
                 >
                   WTF did I just generate?
@@ -86,15 +96,24 @@ const ResultSection = ({ results, onDownload }: ResultSectionProps) => {
 
               <div className="mt-6">
                 <TabsContent value="dockerfile" className="space-y-4">
-                  <CodeBlock content={results.dockerfile} filename="Dockerfile" />
+                  <CodeBlock
+                    content={results.dockerfile}
+                    filename="Dockerfile"
+                  />
                 </TabsContent>
 
                 <TabsContent value="compose" className="space-y-4">
-                  <CodeBlock content={results.dockerCompose} filename="docker-compose.yml" />
+                  <CodeBlock
+                    content={results.dockerCompose}
+                    filename="docker-compose.yml"
+                  />
                 </TabsContent>
 
                 <TabsContent value="dockerignore" className="space-y-4">
-                  <CodeBlock content={results.dockerignore} filename=".dockerignore" />
+                  <CodeBlock
+                    content={results.dockerignore}
+                    filename=".dockerignore"
+                  />
                 </TabsContent>
 
                 <TabsContent value="explain" className="space-y-4">
@@ -106,7 +125,13 @@ const ResultSection = ({ results, onDownload }: ResultSectionProps) => {
                       <p>{results.explanation}</p>
                       <div className="mt-4 p-4 bg-dark-card rounded border-l-4 border-dark-accent">
                         <p className="text-white font-medium">💡 Pro tip:</p>
-                        <p>Run <code className="bg-dark-bg px-2 py-1 rounded text-dark-accent">docker build -t my-app .</code> to build your image!</p>
+                        <p>
+                          Run{" "}
+                          <code className="bg-dark-bg px-2 py-1 rounded text-dark-accent">
+                            docker build -t my-app .
+                          </code>{" "}
+                          to build your image!
+                        </p>
                       </div>
                     </div>
                   </div>
