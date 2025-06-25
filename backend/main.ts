@@ -1,13 +1,13 @@
+import { DockerfileResponseSchema } from "./schema.ts";
 // main.ts
 import { InputSchema } from "./schema.ts";
-import { GoogleGenAI } from "npm:@google/genai@1.6.0";
+import { GoogleGenAI } from "@google/genai";
 import { SYSTEM_PROMPT } from "./prompt.ts";
 
 // Gemini client
-
 const genAI = new GoogleGenAI({
   vertexai: false,
-  apiKey: Deno.env.get("GEMINI_API_KEY")!,
+  apiKey: Deno.env.get("LLM_MODEL_KEY")!,
 });
 
 // HTTP handler
@@ -39,12 +39,24 @@ async function handler(req: Request): Promise<Response> {
 
   // Call Gemini
   const response = await genAI.models.generateContent({
-    model: "gemini-2.0-flash",
+    model: Deno.env.get("LLM_MODEL_NAME")!,
     contents: messages,
   });
   const text = response.text ?? "No results found";
 
-  return new Response(JSON.stringify({ output: text }), {
+  const outputResponse = DockerfileResponseSchema.safeParse(text);
+
+  if (!outputResponse.success) {
+    return new Response(
+      JSON.stringify({ error: outputResponse.error.flatten() }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  return new Response(JSON.stringify({ output: outputResponse.data }), {
     headers: { "Content-Type": "application/json" },
   });
 }
