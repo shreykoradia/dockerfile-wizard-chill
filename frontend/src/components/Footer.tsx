@@ -6,24 +6,34 @@ const Footer = () => {
       <div className="container mx-auto px-4 text-center">
         <div className="max-w-2xl mx-auto">
           <p className="text-dark-muted text-lg mb-6 font-inter">
-            Assembled in a caffeine-fueled haze{" "}
-            <Coffee className="inline w-4 h-4 text-red-500 mx-1 mb-[2px]" />{" "}
-            while aggressively postponing real adulthood — courtesy of{" "}
+            Crafted by{" "}
             <a
-              href="https://shrey.codes"
-              className="text-dark-accent font-semibold hover:underline"
+              href="https://twitter.com/shreykoradia"
+              className="text-dark-accent hover:text-foreground"
             >
               Shrey
             </a>
+            {", "}
+            quietly building good things on the internet.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-6 text-sm text-dark-muted">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-dark-muted">
             <a
               href="https://peerlist.io/shrey_"
               className="hover:text-dark-accent transition-colors flex items-center gap-1"
             >
-              My Peerlist
+              Shrey's Peerlist
             </a>
+            <p className="text-foreground">
+              <a
+                target="_blank"
+                className="text-dark-accent"
+                href="https://talentscout.pro"
+              >
+                TalentScout
+              </a>{" "}
+              coming soon...
+            </p>
           </div>
 
           <div className="mt-8 text-xs text-dark-muted/60">
