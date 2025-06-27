@@ -13,8 +13,6 @@ const Footer = () => {
             >
               Shrey
             </a>
-            {", "}
-            quietly building good things on the internet.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-dark-muted">
