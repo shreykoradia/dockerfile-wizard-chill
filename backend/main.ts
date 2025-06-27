@@ -71,9 +71,14 @@ router.post("/docker-generate", async (ctx: Context) => {
 
 // Setup Oak app
 const app = new Application();
-app.use(oakCors()); // <- CORS middleware (default allows all)
-app.use(router.routes());
-app.use(router.allowedMethods());
+app.use(
+  oakCors({
+    origin: Deno.env.get("FRONTEND_ORIGIN")!,
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "x-salt-key"],
+    credentials: true,
+  })
+);
 
 console.log("🚀 Server running on http://localhost:8000");
 await app.listen({ port: 8000 });
