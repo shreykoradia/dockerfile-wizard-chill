@@ -80,5 +80,6 @@ app.use(
   })
 );
 
-console.log("🚀 Server running on http://localhost:8000");
-await app.listen({ port: 8000 });
+const port = Number(Deno.env.get("PORT") || 8000);
+console.log(`🚀 Listening on http://localhost:${port}`);
+await app.listen({ port });
