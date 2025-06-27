@@ -18,7 +18,6 @@ export interface ResponseProps {
 
 const Index = () => {
   const [results, setResults] = useState<ResponseProps>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const { konamiActivated, resetKonami } = useKonamiCode();
   const generateMutation = useGenerateDocker();
   const { toast } = useToast();
@@ -72,7 +71,10 @@ const Index = () => {
     <div className="min-h-screen">
       <Header />
       <Hero />
-      <GeneratorCard onGenerate={handleGenerate} isLoading={isLoading} />
+      <GeneratorCard
+        onGenerate={handleGenerate}
+        isLoading={generateMutation.isPending}
+      />
       {results && (
         <ResultSection results={results} onDownload={handleDownload} />
       )}
