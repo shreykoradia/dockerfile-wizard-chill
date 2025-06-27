@@ -1,49 +1,44 @@
-import { DockerfileResponseSchema } from "./schema.ts";
-// main.ts
-import { InputSchema } from "./schema.ts";
+import { Application, Router, Context } from "https://deno.land/x/oak/mod.ts";
+import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import { GoogleGenAI } from "@google/genai";
+import { InputSchema, DockerfileResponseSchema } from "./schema.ts";
 import { SYSTEM_PROMPT } from "./prompt.ts";
 import "https://deno.land/std@0.224.0/dotenv/load.ts";
 
-// Gemini client
+// Setup
+const SALT = Deno.env.get("API_SALT_KEY")!;
 const genAI = new GoogleGenAI({
   vertexai: false,
   apiKey: Deno.env.get("LLM_MODEL_KEY")!,
 });
 
-const SALT = Deno.env.get("API_SALT_KEY")!;
+const router = new Router();
 
-// HTTP handler
-async function handler(req: Request): Promise<Response> {
-  const clientSalt = req.headers.get("x-salt-key");
-
+router.post("/docker-generate", async (ctx: Context) => {
+  const clientSalt = ctx.request.headers.get("x-salt-key");
   if (clientSalt !== SALT) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
-  const { pathname } = new URL(req.url);
-  if (req.method !== "POST" && pathname === "/docker-generate") {
-    return new Response("Only POST allowed", { status: 405 });
+    ctx.response.status = 401;
+    ctx.response.body = { error: "Unauthorized" };
+    return;
   }
 
   let userInput;
   try {
-    userInput = await req.json();
+    userInput = await ctx.request.body.json();
   } catch {
-    return new Response("Invalid Payload", { status: 400 });
+    ctx.response.status = 400;
+    ctx.response.body = { error: "Invalid Payload" };
+    return;
   }
 
   const parsed = InputSchema.safeParse(userInput);
   if (!parsed.success) {
-    return new Response(JSON.stringify({ error: parsed.error.flatten() }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    ctx.response.status = 400;
+    ctx.response.body = { error: parsed.error.flatten() };
+    return;
   }
 
-  // Compose chat messages
   const promptPayload = JSON.stringify(parsed.data, null, 2);
-
   const messages = [
     {
       role: "user",
@@ -51,38 +46,34 @@ async function handler(req: Request): Promise<Response> {
     },
   ];
 
-  // Call Gemini
   const response = await genAI.models.generateContent({
     model: Deno.env.get("LLM_MODEL_NAME")!,
     contents: messages,
   });
 
-  const candidate = response?.candidates?.[0];
-  const part = candidate?.content?.parts?.[0];
-  const text = part?.text ?? "No results found";
-
+  const text =
+    response?.candidates?.[0]?.content?.parts?.[0]?.text ?? "No results found";
   const cleanText = text
     .trim()
     .replace(/^```json\n/, "")
     .replace(/```$/, "");
 
-  const outputResponse = DockerfileResponseSchema.safeParse(
-    JSON.parse(cleanText)
-  );
+  const output = DockerfileResponseSchema.safeParse(JSON.parse(cleanText));
 
-  if (!outputResponse.success) {
-    return new Response(
-      JSON.stringify({ error: outputResponse.error.flatten() }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+  if (!output.success) {
+    ctx.response.status = 400;
+    ctx.response.body = { error: output.error.flatten() };
+    return;
   }
 
-  return new Response(JSON.stringify({ result: outputResponse.data }), {
-    headers: { "Content-Type": "application/json" },
-  });
-}
+  ctx.response.body = { result: output.data };
+});
 
-Deno.serve(handler); // default :8000
+// Setup Oak app
+const app = new Application();
+app.use(oakCors()); // <- CORS middleware (default allows all)
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+console.log("🚀 Server running on http://localhost:8000");
+await app.listen({ port: 8000 });

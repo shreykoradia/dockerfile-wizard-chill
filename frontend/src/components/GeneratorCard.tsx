@@ -19,32 +19,32 @@ interface GeneratorCardProps {
 }
 
 export interface ConfigProps {
-  configText: string;
-  stack: string;
+  dependencies: string;
+  stack: "fastapi" | "node" | "next";
   needsRedis: boolean;
   needsPostgres: boolean;
 }
 
 const GeneratorCard = ({ onGenerate, isLoading }: GeneratorCardProps) => {
-  const [stack, setStack] = useState<string>("");
-  const [configText, setConfigText] = useState<string>("");
+  const [stack, setStack] = useState<"fastapi" | "node" | "next" | "">("");
+  const [dependencies, setDependencies] = useState<string>("");
   const [needsRedis, setNeedsRedis] = useState<boolean>(false);
   const [needsPostgres, setNeedsPostgres] = useState<boolean>(false);
 
   const handleGenerate = () => {
-    if (!stack || !configText.trim()) return;
+    if (!stack || !dependencies.trim()) return;
 
     onGenerate({
       stack,
-      configText,
+      dependencies,
       needsRedis,
       needsPostgres,
     });
   };
 
   const showExample = () => {
-    if (stack === "nodejs") {
-      setConfigText(`{
+    if (stack === "node") {
+      setDependencies(`{
   "name": "my-app",
   "version": "1.0.0",
   "scripts": {
@@ -56,8 +56,8 @@ const GeneratorCard = ({ onGenerate, isLoading }: GeneratorCardProps) => {
     "cors": "^2.8.5"
   }
 }`);
-    } else if (stack === "nextjs") {
-      setConfigText(`{
+    } else if (stack === "next") {
+      setDependencies(`{
   "name": "my-next-app",
   "version": "0.1.0",
   "scripts": {
@@ -72,7 +72,7 @@ const GeneratorCard = ({ onGenerate, isLoading }: GeneratorCardProps) => {
   }
 }`);
     } else if (stack === "fastapi") {
-      setConfigText(`fastapi==0.104.1
+      setDependencies(`fastapi==0.104.1
 uvicorn==0.24.0
 pydantic==2.5.0
 python-multipart==0.0.6`);
@@ -102,13 +102,13 @@ python-multipart==0.0.6`);
                 </SelectTrigger>
                 <SelectContent className="bg-dark-card border-dark-border">
                   <SelectItem
-                    value="nodejs"
+                    value="node"
                     className="text-white hover:bg-dark-bg"
                   >
                     ⚪ Node.js
                   </SelectItem>
                   <SelectItem
-                    value="nextjs"
+                    value="next"
                     className="text-white hover:bg-dark-bg"
                   >
                     ⚡ Next.js
@@ -141,8 +141,8 @@ python-multipart==0.0.6`);
                 </Button>
               </div>
               <Textarea
-                value={configText}
-                onChange={(e) => setConfigText(e.target.value)}
+                value={dependencies}
+                onChange={(e) => setDependencies(e.target.value)}
                 placeholder={
                   stack === "fastapi"
                     ? "Paste your requirements.txt content here..."
@@ -180,11 +180,11 @@ python-multipart==0.0.6`);
             {/* Generate Button */}
             <Button
               onClick={handleGenerate}
-              disabled={!stack || !configText.trim() || isLoading}
+              disabled={!stack || !dependencies.trim() || isLoading}
               className={`w-full btn-glow bg-dark-accent text-black font-semibold py-3 text-lg hover:bg-dark-accent/90 ${
                 isLoading ? "animate-pulse" : ""
               } ${
-                !stack || !configText.trim()
+                !stack || !dependencies.trim()
                   ? "opacity-50 cursor-not-allowed"
                   : "neon-glow"
               }`}

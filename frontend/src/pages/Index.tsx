@@ -5,8 +5,9 @@ import GeneratorCard, { ConfigProps } from "@/components/GeneratorCard";
 import ResultSection from "@/components/ResultSection";
 import Footer from "@/components/Footer";
 import { useKonamiCode } from "@/hooks/useKonamiCode";
-import { generateDockerFiles, downloadAsZip } from "@/utils/dockerGenerator";
+import { downloadAsZip } from "@/utils/dockerGenerator";
 import { useToast } from "@/hooks/use-toast";
+import { useGenerateDocker } from "@/hooks/useGenerateDocker";
 
 export interface ResponseProps {
   dockerfile: string;
@@ -19,6 +20,7 @@ const Index = () => {
   const [results, setResults] = useState<ResponseProps>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { konamiActivated, resetKonami } = useKonamiCode();
+  const generateMutation = useGenerateDocker();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -33,25 +35,27 @@ const Index = () => {
   }, [konamiActivated, toast, resetKonami]);
 
   const handleGenerate = async (config: ConfigProps) => {
-    setIsLoading(true);
+    generateMutation.mutate(config, {
+      onSuccess: (data) => {
+        setResults(data);
+        toast({
+          title: "🎉 Docker files generated!",
+          description: "Your containers are ready to ship",
+        });
 
-    // Simulate API call with loading
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    const generatedFiles = generateDockerFiles(config);
-    setResults(generatedFiles);
-    setIsLoading(false);
-
-    toast({
-      title: "🎉 Docker files generated!",
-      description: "Your containers are ready to ship",
+        setTimeout(() => {
+          const element = document.querySelector(".animate-slide-in");
+          element?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      },
+      onError: (error: Error) => {
+        toast({
+          variant: "destructive",
+          title: "❌ Generation failed",
+          description: error.message,
+        });
+      },
     });
-
-    // Scroll to results
-    setTimeout(() => {
-      const element = document.querySelector(".animate-slide-in");
-      element?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
   };
 
   const handleDownload = () => {
