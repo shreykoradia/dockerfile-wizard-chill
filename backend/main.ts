@@ -6,6 +6,12 @@ import "https://deno.land/std@0.224.0/dotenv/load.ts";
 const SALT = Deno.env.get("API_SALT_KEY")!;
 const FRONTEND_ORIGIN = Deno.env.get("FRONTEND_ORIGIN")!;
 
+const ALLOWED_ORIGINS = FRONTEND_ORIGIN.split(",").map((o) => o.trim());
+
+function getCorsOrigin(origin: string | null): string | null {
+  return origin && ALLOWED_ORIGINS.includes(origin) ? origin : null;
+}
+
 const genAI = new GoogleGenAI({
   vertexai: false,
   apiKey: Deno.env.get("LLM_MODEL_KEY")!,
@@ -13,13 +19,14 @@ const genAI = new GoogleGenAI({
 
 Deno.serve(async (req: Request): Promise<Response> => {
   const { pathname } = new URL(req.url);
+  const allowedOrigin = getCorsOrigin(req.headers.get("origin"));
 
   // CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
       headers: {
-        "Access-Control-Allow-Origin": FRONTEND_ORIGIN,
+        "Access-Control-Allow-Origin": allowedOrigin ?? "",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, x-salt-key",
       },
@@ -73,16 +80,16 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return jsonResponse({ error: output.error.flatten() }, 400);
   }
 
-  return jsonResponse({ result: output.data }, 200);
+  return jsonResponse({ result: output.data }, 200, allowedOrigin ?? "");
 });
 
 // deno-lint-ignore no-explicit-any
-function jsonResponse(data: any, status = 200) {
+function jsonResponse(data: any, status = 200, originOverride?: string) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": FRONTEND_ORIGIN,
+      "Access-Control-Allow-Origin": originOverride ?? "",
     },
   });
 }
