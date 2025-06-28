@@ -1,4 +1,4 @@
-import { Github, ExternalLink } from "lucide-react";
+import { Github } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import clsx from "clsx";
 
