@@ -66,7 +66,10 @@ const ResultSection = ({ results, onDownload }: ResultSectionProps) => {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-4 bg-dark-bg border border-dark-border">
+              <TabsList
+                className="w-full bg-transparent md:bg-dark-bg md:border md:border-dark-border 
+             grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm "
+              >
                 <TabsTrigger
                   value="dockerfile"
                   className="data-[state=active]:bg-dark-accent data-[state=active]:text-black"
@@ -93,7 +96,7 @@ const ResultSection = ({ results, onDownload }: ResultSectionProps) => {
                 </TabsTrigger>
               </TabsList>
 
-              <div className="mt-6">
+              <div className="mt-10 sm:mt-6 ">
                 <TabsContent value="dockerfile" className="space-y-4">
                   <CodeBlock
                     content={results.dockerfile}

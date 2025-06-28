@@ -79,20 +79,22 @@
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 3px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #161b22;
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #30363d;
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #484f58;
+    background: linear-gradient(
+      120deg,
+      hsl(var(--background)),
+      hsl(var(--accent))
+    );
+    border-radius: 10px;
+    transition: background 0.3s ease;
   }
 }
 
@@ -109,3 +111,5 @@
     box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
   }
 }
+
+/* scrollbar.css */
