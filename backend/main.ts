@@ -7,8 +7,7 @@ import "https://deno.land/std@0.224.0/dotenv/load.ts";
 const SALT = Deno.env.get("API_SALT_KEY")!;
 const FRONTEND_ORIGIN = Deno.env.get("FRONTEND_ORIGIN")!;
 const ALLOWED_ORIGINS = FRONTEND_ORIGIN.split(",").map((o) => o.trim());
-
-function getCorsOrigin(origin: string | null): string | undefined {
+function getCorsOrigin(origin: string): string | undefined {
   return origin && ALLOWED_ORIGINS.includes(origin) ? origin : undefined;
 }
 
@@ -19,7 +18,9 @@ const genAI = new GoogleGenAI({
 
 Deno.serve(async (req: Request): Promise<Response> => {
   const { pathname } = new URL(req.url);
-  const origin = req.headers.get("origin");
+  const origin =
+    req.headers.get("origin") ??
+    new URL(req.headers.get("referer") ?? "").origin;
   const allowedOrigin = getCorsOrigin(origin);
 
   // If origin is not allowed, reject early
